@@ -96,17 +96,54 @@ impl PublicKey {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use test::Bencher;
+    use crate::Mapper;
 
     #[test]
     fn test_rsa() {
         let blocks: Vec<Bigi> = vec![bigi![5], bigi![12], bigi![894]];
 
         let mut rng = rand::thread_rng();
-        let rsa = RSA::new(32, &mut rng);
+        let rsa = RSA::new(1024, &mut rng);
         let (private_key, public_key) = rsa.gen_keys(&mut rng);
         let encrypted = public_key.encrypt(&blocks);
         let decrypted = private_key.decrypt(&encrypted);
 
         assert_eq!(decrypted, blocks);
+    }
+
+    #[bench]
+    fn bench_gen_keys(b: &mut Bencher) {
+        let mut rng = rand::thread_rng();
+        let rsa = RSA::new(1024, &mut rng);
+        b.iter(|| rsa.gen_keys(&mut rng));
+    }
+
+    #[bench]
+    fn bench_encrypt(b: &mut Bencher) {
+        let mut rng = rand::thread_rng();
+        let rsa = RSA::new(1024, &mut rng);
+        let (private_key, public_key) = rsa.gen_keys(&mut rng);
+
+        let text = "RSA (Rivest-Shamir-Adleman) is one of the first public-key cryptosystems".as_bytes().to_vec();
+        let mapper = Mapper::new(1024);
+        let blocks = mapper.pack(&text);
+
+        b.iter(|| public_key.encrypt(&blocks));
+    }
+
+    #[bench]
+    fn bench_decrypt(b: &mut Bencher) {
+        let mut rng = rand::thread_rng();
+        let rsa = RSA::new(1024, &mut rng);
+        let (private_key, public_key) = rsa.gen_keys(&mut rng);
+
+        let text = "RSA (Rivest-Shamir-Adleman) is one of the first public-key cryptosystems".as_bytes().to_vec();
+        let mapper = Mapper::new(1024);
+        let blocks = mapper.pack(&text);
+
+        let encrypted = public_key.encrypt(&blocks);
+
+        b.iter(|| private_key.decrypt(&encrypted));
     }
 }

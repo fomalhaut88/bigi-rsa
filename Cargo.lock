@@ -2,8 +2,8 @@
 # It is not intended for manual editing.
 [[package]]
 name = "bigi"
-version = "0.1.0"
-source = "git+https://github.com/fomalhaut88/bigi.git#dc4b915fdbbd07a462ad38cecd304220d4f399a7"
+version = "0.4.0"
+source = "git+https://github.com/fomalhaut88/bigi.git?tag=v0.4.0#0596dc15c03f181ae0d9c616c21d38aa469075ac"
 dependencies = [
  "rand",
 ]
