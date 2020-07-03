@@ -113,6 +113,12 @@ mod tests {
     }
 
     #[bench]
+    fn bench_new(b: &mut Bencher) {
+        let mut rng = rand::thread_rng();
+        b.iter(|| RSA::new(1024, &mut rng));
+    }
+
+    #[bench]
     fn bench_gen_keys(b: &mut Bencher) {
         let mut rng = rand::thread_rng();
         let rsa = RSA::new(1024, &mut rng);
@@ -123,7 +129,7 @@ mod tests {
     fn bench_encrypt(b: &mut Bencher) {
         let mut rng = rand::thread_rng();
         let rsa = RSA::new(1024, &mut rng);
-        let (private_key, public_key) = rsa.gen_keys(&mut rng);
+        let (_, public_key) = rsa.gen_keys(&mut rng);
 
         let text = "RSA (Rivest-Shamir-Adleman) is one of the first public-key cryptosystems".as_bytes().to_vec();
         let mapper = Mapper::new(1024);
